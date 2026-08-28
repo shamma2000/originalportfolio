@@ -36,7 +36,7 @@ export default function Home() {
             </h2>
             <p className="hero-description">Freelance UI/UX Designer, Frontend Developer & Passionate Photographer. I design and build digital products that people love to use fast, clean, and visually striking.</p>
             <div className="hero-actions">
-              <a className="button button-primary" href="/Neshan-Rajaguru-CV.pdf" download>Download my CV</a>
+              <a className="button button-primary" href="/newcv.pdf" download>Download my CV</a>
               <a className="button button-secondary" href="#contact">Let&apos;s Talk</a>
             </div>
             <div className="social-links" aria-label="Social links">
