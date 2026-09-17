@@ -63,11 +63,19 @@ export default function ContactSection() {
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		if (!formData.name.trim() || !formData.email.trim() || !formData.projectType || !formData.message.trim()) {
+			setStatus({ type: "error", message: "Please complete all fields before sending." });
+			return;
+		}
+		if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+			setStatus({ type: "error", message: "Please enter a valid email address." });
+			return;
+		}
 		setIsSubmitting(true);
 		setStatus(null);
 
 		try {
-			const response = await fetch("/api/contact", {
+			const response = await fetch("/api/send", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(formData),
@@ -78,7 +86,7 @@ export default function ContactSection() {
 			setFormData({ name: "", email: "", projectType: "", message: "", website: "" });
 			setStatus({ type: "success", message: "Message sent successfully! I'll get back to you soon." });
 		} catch {
-			setStatus({ type: "error", message: "Something went wrong. Please try again or contact me directly." });
+			setStatus({ type: "error", message: "Something went wrong. Please try again." });
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -136,6 +144,7 @@ export default function ContactSection() {
 							value={formData.name}
 							onChange={handleChange}
 							className="contact-input"
+							maxLength={100}
 							required
 						/>
 						<input
@@ -145,6 +154,7 @@ export default function ContactSection() {
 							value={formData.email}
 							onChange={handleChange}
 							className="contact-input"
+							maxLength={254}
 							required
 						/>
 					</div>
@@ -168,6 +178,7 @@ export default function ContactSection() {
 						onChange={handleChange}
 						className="contact-input contact-textarea"
 						rows={5}
+							maxLength={5000}
 						required
 					/>
 					<button type="submit" className="contact-submit" disabled={isSubmitting}>
