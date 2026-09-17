@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import About from "./about";
 import Education from "./Education";
 import TechnicalSkills from "./Technical_Skills";
@@ -14,14 +17,19 @@ const navigation = [
 ] as const;
 
 export default function Home() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
     <main className="hero-page flex w-full min-h-screen flex-col overflow-x-hidden">
       <section className="portfolio-card hero-card mx-auto w-full max-w-6xl" id="home">
         <nav className="hero-nav" aria-label="Primary navigation">
           <a className="hero-logo" href="#home">Neshan<span>.</span></a>
-          <div className="hero-nav-links">
+          <button type="button" className="mobile-menu-toggle" aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={isMenuOpen} onClick={() => setIsMenuOpen((open) => !open)}>
+            <span /><span /><span />
+          </button>
+          <div className={`hero-nav-links${isMenuOpen ? " is-open" : ""}`}>
             {navigation.map(([label, id]) => (
-              <a className={id === "about-me" ? "active" : ""} href={`#${id}`} key={id}>{label}</a>
+              <a className={id === "about-me" ? "active" : ""} href={`#${id}`} key={id} onClick={() => setIsMenuOpen(false)}>{label}</a>
             ))}
           </div>
         </nav>
