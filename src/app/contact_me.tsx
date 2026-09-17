@@ -51,15 +51,37 @@ export default function ContactSection() {
 		email: "",
 		projectType: "",
 		message: "",
+		website: "",
 	});
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
+		setStatus(null);
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		console.log("Form submitted:", formData);
+		setIsSubmitting(true);
+		setStatus(null);
+
+		try {
+			const response = await fetch("/api/contact", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(formData),
+			});
+
+			if (!response.ok) throw new Error("Contact request failed");
+
+			setFormData({ name: "", email: "", projectType: "", message: "", website: "" });
+			setStatus({ type: "success", message: "Message sent successfully! I'll get back to you soon." });
+		} catch {
+			setStatus({ type: "error", message: "Something went wrong. Please try again or contact me directly." });
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	return (
@@ -96,6 +118,16 @@ export default function ContactSection() {
 
 				{/* Column 2 — The Form */}
 				<form className="contact-form" onSubmit={handleSubmit} autoComplete="off">
+					<input
+						type="text"
+						name="website"
+						value={formData.website}
+						onChange={handleChange}
+						autoComplete="off"
+						tabIndex={-1}
+						aria-hidden="true"
+						style={{ display: "none" }}
+					/>
 					<div className="contact-form-row">
 						<input
 							type="text"
@@ -121,6 +153,7 @@ export default function ContactSection() {
 						value={formData.projectType}
 						onChange={handleChange}
 						className="contact-input contact-select"
+						required
 					>
 						<option value="" disabled>Project Type</option>
 						<option value="web">Web Development</option>
@@ -135,13 +168,15 @@ export default function ContactSection() {
 						onChange={handleChange}
 						className="contact-input contact-textarea"
 						rows={5}
+						required
 					/>
-					<button type="submit" className="contact-submit">
-						SEND MESSAGE
+					<button type="submit" className="contact-submit" disabled={isSubmitting}>
+						{isSubmitting ? "SENDING..." : "SEND MESSAGE"}
 						<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
 							<path d="M22 2L11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" />
 						</svg>
 					</button>
+					{status && <p role="status" aria-live="polite">{status.message}</p>}
 				</form>
 
 				{/* Column 3 — Futuristic Image */}
