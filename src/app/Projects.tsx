@@ -74,7 +74,7 @@ function Card({ project, index }: { project: Project; index: number }) {
 	const topMargin = index === 0 ? 0 : TITLE_HEIGHT + index * HEADER_STEP;
 
 	return (
-		<div ref={containerRef} className="sticky top-20 flex h-[65vh] items-start justify-center" style={{ paddingTop: `${topMargin}px`, zIndex: index + 10 }}>
+		<div ref={containerRef} className="project-card-shell sticky top-20 flex h-[65vh] items-start justify-center" style={{ paddingTop: `${topMargin}px`, zIndex: index + 10 }}>
 			<div className="w-full">
 				{index === 0 && <div className="mb-5 h-[60px]"><motion.div initial={{ opacity: 0, y: 35 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.1 }} transition={{ duration: 0.6, type: "spring", bounce: 0.2 }}><h2 className="text-4xl font-black tracking-tight text-white/90 md:text-5xl">Projects<span className="mt-3 block h-1.5 w-24 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(0,229,255,0.8)]" /></h2></motion.div></div>}
 				<motion.article initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.1 }} transition={{ duration: 0.6, type: "spring", bounce: 0.2 }} className="group relative w-full overflow-hidden rounded-[2rem] border border-cyan-500/25 bg-[#08101a]/75 p-6 shadow-2xl backdrop-blur-xl md:px-8 md:pb-8 md:pt-6">

@@ -61,13 +61,8 @@ export default function TechnicalSkills() {
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [isPaused, setIsPaused] = useState(false);
 	const touchStartX = useRef<number | null>(null);
+	const carouselRef = useRef<HTMLDivElement>(null);
 	const move = useCallback((direction: number) => setActiveIndex((current) => (current + direction + cards.length) % cards.length), []);
-
-	useEffect(() => {
-		const handleKeyDown = (event: KeyboardEvent) => { if (event.key === "ArrowLeft") move(-1); if (event.key === "ArrowRight") move(1); };
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [move]);
 
 	useEffect(() => {
 		if (isPaused) return;
@@ -78,7 +73,7 @@ export default function TechnicalSkills() {
 	return (
 		<section id="technical-skills" className="skills-section relative flex w-full flex-col items-center overflow-hidden">
 			<div className="skills-header"><h2>My Tech Stack</h2></div>
-			<div className="skills-carousel relative mx-auto flex w-full max-w-6xl items-center justify-center" aria-roledescription="carousel" aria-label="Technical skills categories" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)} onTouchStart={(event) => { touchStartX.current = event.touches[0].clientX; }} onTouchEnd={(event) => { if (touchStartX.current === null) return; const distance = event.changedTouches[0].clientX - touchStartX.current; if (Math.abs(distance) > 50) move(distance > 0 ? -1 : 1); touchStartX.current = null; }}>
+			<div ref={carouselRef} tabIndex={0} role="region" className="skills-carousel relative mx-auto flex w-full max-w-6xl items-center justify-center" aria-roledescription="carousel" aria-label="Technical skills categories" onKeyDown={(event) => { if (event.key === "ArrowLeft") move(-1); if (event.key === "ArrowRight") move(1); }} onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)} onTouchStart={(event) => { touchStartX.current = event.touches[0].clientX; }} onTouchEnd={(event) => { if (touchStartX.current === null) return; const distance = event.changedTouches[0].clientX - touchStartX.current; if (Math.abs(distance) > 50) move(distance > 0 ? -1 : 1); touchStartX.current = null; }}>
 				<div className="skills-stage relative flex w-full items-center justify-center">
 					{cards.map((card, index) => { const position = relativePosition(index, activeIndex); const isActive = position === 0; const isVisible = Math.abs(position) <= 2; return <motion.article key={card.title} aria-label={`Show ${card.title}`} aria-pressed={isActive} initial={false} animate={cardMotion(position)} transition={{ type: "spring", stiffness: 180, damping: 24 }} onClick={() => setActiveIndex(index)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setActiveIndex(index); }} tabIndex={isVisible ? 0 : -1} role="button" className={`skills-card absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 ${isActive ? "skills-card-active" : "skills-card-side"} ${isVisible ? "" : "skills-card-hidden"}`}>
 						<h3>{card.title}</h3><div className="skills-badges">{card.items.map((item) => <SkillBadge key={item.name} item={item} />)}</div>

@@ -144,6 +144,7 @@ export default function ContactSection() {
 							value={formData.name}
 							onChange={handleChange}
 							className="contact-input"
+							aria-label="Your name"
 							maxLength={100}
 							required
 						/>
@@ -154,6 +155,7 @@ export default function ContactSection() {
 							value={formData.email}
 							onChange={handleChange}
 							className="contact-input"
+							aria-label="Your email"
 							maxLength={254}
 							required
 						/>
@@ -163,6 +165,7 @@ export default function ContactSection() {
 						value={formData.projectType}
 						onChange={handleChange}
 						className="contact-input contact-select"
+						aria-label="Project type"
 						required
 					>
 						<option value="" disabled>Project Type</option>
@@ -177,6 +180,7 @@ export default function ContactSection() {
 						value={formData.message}
 						onChange={handleChange}
 						className="contact-input contact-textarea"
+						aria-label="Project message"
 						rows={5}
 							maxLength={5000}
 						required

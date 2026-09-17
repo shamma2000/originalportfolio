@@ -231,6 +231,13 @@ body { margin: 0; background: var(--page-bg); color: #fff; font-family: Arial, H
 	.contact-form-row { grid-template-columns: 1fr; }
 }
 
+@media (min-width: 761px) and (max-width: 1023px) {
+	.hero-card { min-height: auto; }
+	.hero-content { min-height: 620px; }
+	.hero-portrait { min-height: 620px; }
+	.hero-copy { padding-right: 7%; }
+}
+
 /* Final mobile layout overrides. These stay last so older desktop rules cannot override them. */
 @media (max-width: 760px) {
 	html, body { width: 100%; min-width: 0; overflow-x: hidden; }
@@ -276,4 +283,8 @@ body { margin: 0; background: var(--page-bg); color: #fff; font-family: Arial, H
 	.contact-input { max-width: 100%; }
 	.contact-submit { width: 100%; }
 	.detail-section { min-width: 0; padding-left: 6%; padding-right: 6%; }
+	.project-card-shell { position: static; height: auto; min-height: 0; padding-top: 0 !important; }
+	.project-card-shell article { border-radius: 1.5rem; }
+	.contact-detail-row > div:last-child { min-width: 0; }
+	.contact-detail-value { overflow-wrap: anywhere; word-break: break-word; }
 }
