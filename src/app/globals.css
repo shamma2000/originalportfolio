@@ -230,3 +230,50 @@ body { margin: 0; background: var(--page-bg); color: #fff; font-family: Arial, H
 	.contact-graphic { display: none; }
 	.contact-form-row { grid-template-columns: 1fr; }
 }
+
+/* Final mobile layout overrides. These stay last so older desktop rules cannot override them. */
+@media (max-width: 760px) {
+	html, body { width: 100%; min-width: 0; overflow-x: hidden; }
+	.hero-page { width: 100%; min-width: 0; padding: 0; gap: 32px; align-items: stretch; }
+	.hero-card, .portfolio-card { width: 100%; max-width: 100%; min-width: 0; border-radius: 0; }
+	.hero-card { min-height: 100svh; }
+	.hero-nav { height: auto; min-height: 64px; padding: 16px 6%; gap: 18px; }
+	.hero-nav-links { min-width: 0; max-width: 72%; overflow-x: auto; justify-content: flex-start; }
+	.hero-content { min-height: calc(100svh - 64px); grid-template-columns: 1fr; }
+	.hero-portrait { inset: 8% 0 0; width: 100%; min-height: 0; height: auto; }
+	.hero-copy { min-width: 0; padding: 0 8% 10svh; }
+	.hero-copy h1 { max-width: 100%; font-size: clamp(36px, 11vw, 58px); overflow-wrap: anywhere; }
+	.hero-copy h2 { font-size: clamp(18px, 6vw, 23px); }
+	.typing-line { max-width: 100%; white-space: normal; }
+	.typing-line span { max-width: 100%; }
+	.hero-description { max-width: 100%; }
+	.hero-actions { gap: 12px; }
+	.button { min-width: 0; flex: 1 1 150px; }
+	.detail-sections { width: 100%; min-width: 0; gap: 32px; }
+	.portfolio-card > .about-section,
+	.portfolio-card > .education-section,
+	.portfolio-card > .skills-section,
+	.portfolio-card > .projects-section,
+	.portfolio-card > .experience-section,
+	.portfolio-card > .contact-section { width: 100%; min-width: 0; }
+	.about-section, .education-section, .skills-section, .projects-section, .experience-section, .contact-section { padding-left: 6%; padding-right: 6%; }
+	.about-layout { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+	.about-description { max-width: 100%; font-size: 16px; overflow-wrap: anywhere; }
+	.about-photo { min-height: 260px; }
+	.education-timeline, .experience-timeline { width: auto; min-width: 0; margin-left: 12px; padding-left: 24px; }
+	.education-card, .experience-card { min-width: 0; overflow-wrap: anywhere; }
+	.skills-section { margin-left: 0; margin-right: 0; padding-top: 48px; }
+	.skills-stage { height: 26rem; min-width: 0; }
+	.skills-card { width: calc(100% - 28px); max-width: 34rem; min-width: 0; padding: 20px 12px; }
+	.skills-card-inner { padding: 22px 14px; }
+	.skills-badges { gap: 8px; }
+	.skill-badge { width: 62px; height: 62px; }
+	.contact-section { padding-top: 48px; padding-bottom: 56px; }
+	.contact-grid { min-width: 0; gap: 32px; }
+	.contact-title { font-size: clamp(26px, 9vw, 40px); overflow-wrap: anywhere; }
+	.contact-form, .contact-form-row, .contact-input { min-width: 0; }
+	.contact-form-row { grid-template-columns: minmax(0, 1fr); }
+	.contact-input { max-width: 100%; }
+	.contact-submit { width: 100%; }
+	.detail-section { min-width: 0; padding-left: 6%; padding-right: 6%; }
+}
