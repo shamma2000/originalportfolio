@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import { motion, useScroll } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
 	return (
@@ -66,27 +66,144 @@ function ProjectPreview({ number, image, title }: { number: string; image?: stri
 	);
 }
 
-function Card({ project, index }: { project: Project; index: number }) {
-	const containerRef = useRef<HTMLDivElement>(null);
-	useScroll({ target: containerRef, offset: ["start end", "start start"] });
-	const TITLE_HEIGHT = 80;
-	const HEADER_STEP = 92;
-	const topMargin = index === 0 ? 0 : TITLE_HEIGHT + index * HEADER_STEP;
+/** A single stacking card driven by shared scroll progress */
+function StackingCard({
+	project,
+	index,
+	total,
+	containerRef,
+}: {
+	project: Project;
+	index: number;
+	total: number;
+	containerRef: React.RefObject<HTMLDivElement | null>;
+}) {
+	const isLast = index === total - 1;
+
+	// Track scroll progress across the ENTIRE stacking container.
+	const { scrollYProgress } = useScroll({
+		target: containerRef,
+		offset: ["start start", "end end"],
+	});
+
+	// Each card occupies its own 1/total slice of the scroll range.
+	const cardStart = index / total;
+	const cardEnd = (index + 1) / total;
+
+	// Scale down as the NEXT card arrives; last card stays at 1.
+	const scale = useTransform(scrollYProgress, [cardStart, cardEnd], [1, isLast ? 1 : 0.88]);
+	// Dim as it gets pushed behind.
+	const opacity = useTransform(scrollYProgress, [cardStart, cardEnd], [1, isLast ? 1 : 0.55]);
+
+	// Stack offset: each card sits a bit lower so they peek under one another.
+	const TOP_BASE = 72; // px from viewport top
+	const STACK_OFFSET = 18; // px per card
 
 	return (
-		<div ref={containerRef} className="project-card-shell sticky top-20 flex h-[65vh] items-start justify-center" style={{ paddingTop: `${topMargin}px`, zIndex: index + 10 }}>
-			<div className="w-full">
-				{index === 0 && <div className="mb-5 h-[60px]"><motion.div initial={{ opacity: 0, y: 35 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.1 }} transition={{ duration: 0.6, type: "spring", bounce: 0.2 }}><h2 className="text-4xl font-black tracking-tight text-white/90 md:text-5xl">Projects<span className="mt-3 block h-1.5 w-24 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(0,229,255,0.8)]" /></h2></motion.div></div>}
-				<motion.article initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.1 }} transition={{ duration: 0.6, type: "spring", bounce: 0.2 }} className="group relative w-full overflow-hidden rounded-[2rem] border border-cyan-500/25 bg-[#08101a]/75 p-6 shadow-2xl backdrop-blur-xl md:px-8 md:pb-8 md:pt-6">
+		<div
+			className="sticky"
+			style={{ top: `${TOP_BASE + index * STACK_OFFSET}px`, zIndex: index + 10 }}
+		>
+			<motion.div style={{ scale, opacity }} className="origin-top w-full">
+				{/* Section heading above first card */}
+				{index === 0 && (
+					<motion.div
+						initial={{ opacity: 0, y: 35 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: false, amount: 0.1 }}
+						transition={{ duration: 0.6, type: "spring", bounce: 0.2 }}
+						className="mb-5"
+					>
+						<h2 className="text-4xl font-black tracking-tight text-white/90 md:text-5xl">
+							Projects
+							<span className="mt-3 block h-1.5 w-24 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(0,229,255,0.8)]" />
+						</h2>
+					</motion.div>
+				)}
+
+				<motion.article
+					initial={{ opacity: 0, y: 60 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					viewport={{ once: false, amount: 0.1 }}
+					transition={{ duration: 0.5, type: "spring", bounce: 0.2 }}
+					className="group relative w-full overflow-hidden rounded-[2rem] border border-cyan-500/25 bg-[#08101a]/90 p-6 shadow-2xl backdrop-blur-xl md:px-8 md:pb-8 md:pt-6"
+				>
+					{/* Glow overlay */}
 					<div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(0,229,255,0.12),_transparent_55%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-					<div className="relative z-10 flex w-full items-center gap-4 border-b border-cyan-500/20 pb-3.5 md:gap-6"><span className="text-3xl font-black text-white/90 md:text-5xl">{project.number}</span><span className="min-w-0 flex-1"><span className="block truncate text-base font-bold text-white md:text-xl">{project.title}</span><span className="mt-0.5 block truncate text-xs font-medium text-slate-400 md:text-sm">{project.company ? `${project.company} | ` : ""}{project.timeline}</span></span>{project.githubLink && (<a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="flex flex-shrink-0 items-center justify-center rounded-full p-2 text-gray-300 transition-colors duration-300 hover:bg-cyan-900/30 hover:text-cyan-400" aria-label={`View ${project.title} on GitHub`}><GithubIcon className="h-6 w-6 md:h-7 md:w-7" /></a>)}</div>
-					<div className="relative z-10 mt-5 grid gap-6 md:grid-cols-[1.1fr_1fr]"><div><p className="text-sm leading-relaxed text-slate-300 md:text-base">{project.description}</p><div className="mt-5 flex flex-wrap gap-2">{project.technologies.map((tech) => <span key={tech} className="rounded-full border border-cyan-400/40 bg-[#082536]/80 px-3 py-1 text-xs font-medium text-cyan-100 shadow-[0_0_0_1px_rgba(0,229,255,0.2),0_0_20px_rgba(0,91,135,0.35)]">{tech}</span>)}</div></div><ProjectPreview number={project.number} image={project.image} title={project.title} /></div>
+
+					{/* Header row */}
+					<div className="relative z-10 flex w-full items-center gap-4 border-b border-cyan-500/20 pb-3.5 md:gap-6">
+						<span className="text-3xl font-black text-white/90 md:text-5xl">{project.number}</span>
+						<span className="min-w-0 flex-1">
+							<span className="block truncate text-base font-bold text-white md:text-xl">{project.title}</span>
+							<span className="mt-0.5 block truncate text-xs font-medium text-slate-400 md:text-sm">
+								{project.company ? `${project.company} | ` : ""}{project.timeline}
+							</span>
+						</span>
+						{project.githubLink && (
+							<a
+								href={project.githubLink}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="flex flex-shrink-0 items-center justify-center rounded-full p-2 text-gray-300 transition-colors duration-300 hover:bg-cyan-900/30 hover:text-cyan-400"
+								aria-label={`View ${project.title} on GitHub`}
+							>
+								<GithubIcon className="h-6 w-6 md:h-7 md:w-7" />
+							</a>
+						)}
+					</div>
+
+					{/* Body */}
+					<div className="relative z-10 mt-5 grid gap-6 md:grid-cols-[1.1fr_1fr]">
+						<div>
+							<p className="text-sm leading-relaxed text-slate-300 md:text-base">{project.description}</p>
+							<div className="mt-5 flex flex-wrap gap-2">
+								{project.technologies.map((tech) => (
+									<span
+										key={tech}
+										className="rounded-full border border-cyan-400/40 bg-[#082536]/80 px-3 py-1 text-xs font-medium text-cyan-100 shadow-[0_0_0_1px_rgba(0,229,255,0.2),0_0_20px_rgba(0,91,135,0.35)]"
+									>
+										{tech}
+									</span>
+								))}
+							</div>
+						</div>
+						<ProjectPreview number={project.number} image={project.image} title={project.title} />
+					</div>
 				</motion.article>
-			</div>
+			</motion.div>
 		</div>
 	);
 }
 
 export default function ProjectsAccordion() {
-	return <section id="projects" className="relative w-full pt-4 pb-40"><div className="relative flex flex-col">{projects.map((project, index) => <Card key={project.number} project={project} index={index} />)}</div></section>;
+	// Single ref shared by ALL cards — the source of scroll truth.
+	const containerRef = useRef<HTMLDivElement>(null);
+
+	return (
+		<section id="projects" className="relative w-full pt-4">
+			{/*
+			  Height = 100vh × number of cards gives each card a full
+			  viewport-height of scroll room to animate through.
+			*/}
+			<div
+				ref={containerRef}
+				style={{ height: `calc(100vh + ${(projects.length - 1) * 60}vh)` }}
+				className="relative"
+			>
+				{/* Sticky wrapper holds all cards while scrolling through the container */}
+				<div className="sticky top-0 pt-4 pb-4">
+					{projects.map((project, index) => (
+						<StackingCard
+							key={project.number}
+							project={project}
+							index={index}
+							total={projects.length}
+							containerRef={containerRef}
+						/>
+					))}
+				</div>
+			</div>
+		</section>
+	);
 }

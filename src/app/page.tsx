@@ -20,7 +20,7 @@ export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <main className="hero-page flex w-full min-h-screen flex-col overflow-x-hidden">
+    <main className="hero-page flex w-full min-h-screen flex-col">
       <section className="portfolio-card hero-card mx-auto w-full max-w-6xl" id="home">
         <nav className="hero-nav" aria-label="Primary navigation">
           <a className="hero-logo" href="#home">Neshan<span>.</span></a>

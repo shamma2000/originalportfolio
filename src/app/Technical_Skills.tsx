@@ -66,7 +66,7 @@ export default function TechnicalSkills() {
 
 	useEffect(() => {
 		if (isPaused) return;
-		const timer = window.setInterval(() => move(1), 2000);
+		const timer = window.setInterval(() => move(1), 1500);
 		return () => window.clearInterval(timer);
 	}, [isPaused, move]);
 
